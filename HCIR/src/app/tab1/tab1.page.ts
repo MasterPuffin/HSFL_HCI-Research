@@ -16,6 +16,7 @@ export class Tab1Page {
   /*
   Octave 4
   See https://mixbutton.com/mixing-articles/music-note-to-frequency-chart/
+  and https://tonejs.github.io
    */
 
   notes: object = {
