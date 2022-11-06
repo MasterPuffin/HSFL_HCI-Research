@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab3',
@@ -7,6 +8,20 @@ import { Component } from '@angular/core';
 })
 export class Tab3Page {
 
-  constructor() {}
+  constructor(private toastController: ToastController) {}
+
+
+  async sendData() {
+    console.log('sending data')
+
+    const toast = await this.toastController.create({
+      message: 'Die Daten wurden gesendet',
+      duration: 1500,
+      position: 'bottom'
+    });
+
+    await toast.present();
+  }
+
 
 }
