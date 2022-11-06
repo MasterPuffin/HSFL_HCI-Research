@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import * as Tone from 'tone'
 
 @Component({
   selector: 'app-tab1',
@@ -6,7 +7,17 @@ import { Component } from '@angular/core';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page {
+  synth: any;
 
-  constructor() {}
+  constructor() {
+    this.synth = new Tone.Synth().toDestination();
+  }
+
+  playSound() {
+    console.log('playing sound')
+
+//play a middle 'C' for the duration of an 8th note
+    this.synth.triggerAttackRelease("C4", "8n");
+  }
 
 }
