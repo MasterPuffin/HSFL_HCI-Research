@@ -13,7 +13,12 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-button expand="block" (click)="playSound()">Ton abspielen</ion-button>
+  <ion-button expand="block" (click)="playReferenceSound()">Referenzton abspielen</ion-button>
+  <ion-range (ionChange)="onSliderChange($event)" [ticks]="true" [snaps]="true" [min]="0" [max]="10" [value]="5"></ion-range>
+  <ion-button expand="block" (click)="playSelectedSound()">Ausgewählten Ton abspielen</ion-button>
+  <ion-button expand="block" color="success" class="ion-margin-top" (click)="confirmSelection()">Auswahl bestätigen</ion-button>
+  <ion-button expand="block" color="medium" class="ion-margin-top" (click)="setup()">Setup</ion-button>
+
 
 
 </ion-content>
