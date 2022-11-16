@@ -9,6 +9,30 @@ import {AlertController} from '@ionic/angular';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page {
+  knob: any
+
+  progressBar: any =
+    {
+      size: '70%',
+      offset: '0%',
+      background: {
+        stroke: '#373636',
+        strokeWidth: 1,
+        fill: {color: '#a7a7a7', gradientType: "linear", gradientStops: [[0, 1], [50, 0.5], [100, 1]]}
+      }
+    };
+  pointer: any =
+    {
+      type: 'circle',
+      style: {
+        fill: {color: '#a4a3a3', gradientType: "linear", gradientStops: [[0, 0.5], [50, 0.6], [100, 1]]},
+        stroke: '#333'
+      },
+      size: '10%',
+      offset: '50%'
+    };
+
+
   synth: any;
   sliderValue: number;
   currentNote: any
@@ -61,8 +85,19 @@ export class Tab1Page {
     this.setup();
   }
 
-  onSliderChange(ev: Event) {
-    this.sliderValue = <number>(ev as RangeCustomEvent).detail.value;
+  oldVal: number = -1
+  offset: number = 0
+  knobVal:any=50
+
+  onSliderChange(ev: any) {
+    console.log(ev.args.value)
+    if (ev.args.value == 0 && this.oldVal > 50) {
+      this.offset++
+    } else if (ev.args.value == 0 && this.oldVal < 50) {
+      this.offset--
+    }
+    this.oldVal = this.sliderValue
+    this.sliderValue = ev.args.value;
   }
 
   setup() {
