@@ -1,6 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
 import * as Tone from 'tone'
-import {RangeCustomEvent} from "@ionic/angular";
 import {AlertController} from '@ionic/angular';
 import {jqxKnobComponent} from "jqwidgets-ng/jqxknob";
 
@@ -36,6 +35,7 @@ export class Tab1Page {
   synth: any;
   sliderValue: number;
   currentNote: any
+  randomToneOffset: number
 
   /*
   Octave 4
@@ -53,8 +53,6 @@ export class Tab1Page {
     H: 493.88
   }
 
-  steps: any
-
   constructor(private alertController: AlertController) {
     this.synth = new Tone.Synth().toDestination();
     this.setup(false)
@@ -66,17 +64,19 @@ export class Tab1Page {
   }
 
   playSelectedSound() {
-    this.synth.triggerAttackRelease(this.steps[this.sliderValue], "8n");
+    this.synth.triggerAttackRelease(this.currentNote + this.calculateSelectedDif(), "8n");
+  }
+
+  calculateSelectedDif() {
+    return (this.sliderValue + (this.offset * 100) - 50) * 1 + this.randomToneOffset
   }
 
   async confirmSelection() {
-    console.log(this.currentNote)
-    console.log(this.steps[this.sliderValue])
-    const diff = Math.abs(this.currentNote - this.steps[this.sliderValue])
+    const diff = Math.abs(this.calculateSelectedDif())
 
     const alert = await this.alertController.create({
       header: 'Ergebnis',
-      message: 'Die Differenz beträgt: ' + diff,
+      message: 'Die Differenz beträgt: ' + Math.round(diff * 100) / 100 + ' Hz',
       buttons: ['OK'],
     });
 
@@ -100,7 +100,7 @@ export class Tab1Page {
   }
 
   setup(setKnob = true) {
-    this.sliderValue = 5;
+    this.sliderValue = 50;
     const oldNote = this.currentNote
     if (setKnob) {
       this.myKnob.val(50)
@@ -110,12 +110,10 @@ export class Tab1Page {
       this.currentNote = getRandomProperty(this.notes)
     } while (oldNote == this.currentNote)
 
-    console.log(this.currentNote)
+    this.randomToneOffset = (Math.random() * (30 - 10) + 10) * (Math.random() < 0.5 ? -1 : 1);
 
-    this.steps = []
-    for (let i = 0; i < 10; i++) {
-      this.steps[i] = this.currentNote + (i * 10 - 50);
-    }
+    console.log(this.randomToneOffset)
+    console.log(this.currentNote)
   }
 }
 
