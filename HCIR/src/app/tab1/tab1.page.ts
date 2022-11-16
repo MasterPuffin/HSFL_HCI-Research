@@ -1,7 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import * as Tone from 'tone'
 import {RangeCustomEvent} from "@ionic/angular";
 import {AlertController} from '@ionic/angular';
+import {jqxKnobComponent} from "jqwidgets-ng/jqxknob";
 
 @Component({
   selector: 'app-tab1',
@@ -9,8 +10,7 @@ import {AlertController} from '@ionic/angular';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page {
-  knob: any
-
+  @ViewChild('knobReference') myKnob: jqxKnobComponent;
   progressBar: any =
     {
       size: '70%',
@@ -57,7 +57,7 @@ export class Tab1Page {
 
   constructor(private alertController: AlertController) {
     this.synth = new Tone.Synth().toDestination();
-    this.setup()
+    this.setup(false)
   }
 
 
@@ -87,10 +87,9 @@ export class Tab1Page {
 
   oldVal: number = -1
   offset: number = 0
-  knobVal:any=50
 
   onSliderChange(ev: any) {
-    console.log(ev.args.value)
+    //TODO when turning to fast events are omitted
     if (ev.args.value == 0 && this.oldVal > 50) {
       this.offset++
     } else if (ev.args.value == 0 && this.oldVal < 50) {
@@ -100,9 +99,12 @@ export class Tab1Page {
     this.sliderValue = ev.args.value;
   }
 
-  setup() {
+  setup(setKnob = true) {
     this.sliderValue = 5;
     const oldNote = this.currentNote
+    if (setKnob) {
+      this.myKnob.val(50)
+    }
 
     do {
       this.currentNote = getRandomProperty(this.notes)

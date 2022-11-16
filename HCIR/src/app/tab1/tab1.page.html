@@ -14,16 +14,17 @@
   </ion-header>
 
   <ion-button expand="block" (click)="playReferenceSound()">Referenzton abspielen</ion-button>
-  <ion-range (ionChange)="onSliderChange($event)" [ticks]="true" [snaps]="true" [min]="0" [max]="10" [value]="5"></ion-range>
+  <ion-range (ionChange)="onSliderChange($event)" [ticks]="true" [snaps]="true" [min]="0" [max]="10"
+             [value]="5"></ion-range>
   <ion-button expand="block" (click)="playSelectedSound()">Ausgewählten Ton abspielen</ion-button>
-  <ion-button expand="block" color="success" class="ion-margin-top" (click)="confirmSelection()">Auswahl bestätigen</ion-button>
+  <ion-button expand="block" color="success" class="ion-margin-top" (click)="confirmSelection()">Auswahl bestätigen
+  </ion-button>
   <ion-button expand="block" color="medium" class="ion-margin-top" (click)="setup()">Setup</ion-button>
-  <jqxKnob
-    (onChange)="onSliderChange($event)"
-    [(value)]="knobVal" [min]="0" [max]="99" [startAngle]="90"
-    [endAngle]="450" [snapToStep]="true" [rotation]="'clockwise'"
-    [progressBar]="progressBar" [pointer]="pointer">
+  <jqxKnob #knobReference
+           (onChange)="onSliderChange($event)"
+           [value]="50" [min]="0" [max]="99" [startAngle]="90"
+           [endAngle]="450" [snapToStep]="true" [rotation]="'clockwise'"
+           [progressBar]="progressBar" [pointer]="pointer">
   </jqxKnob>
-{{sliderValue}}
-{{offset}}
+  {{sliderValue + (offset * 100)}}
 </ion-content>
