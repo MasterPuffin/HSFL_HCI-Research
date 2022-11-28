@@ -17,7 +17,7 @@
   <jqxKnob #knobReference
            (onChange)="onSliderChange($event)"
            [value]="50" [min]="0" [max]="99" [startAngle]="90"
-           [endAngle]="450" [snapToStep]="true" [rotation]="'clockwise'"
+           [endAngle]="450" [snapToStep]="false" [rotation]="'clockwise'"
            [progressBar]="progressBar" [pointer]="pointer">
   </jqxKnob>
   {{sliderValue + (offset * 100) - 50 }}

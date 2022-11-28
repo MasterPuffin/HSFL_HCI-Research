@@ -31,7 +31,7 @@ export class Tab1Page {
       offset: '50%'
     };
 
-
+  referenceToneSynth: any;
   synth: any;
   sliderValue: number;
   currentNote: any
@@ -54,17 +54,23 @@ export class Tab1Page {
   }
 
   constructor(private alertController: AlertController) {
-    this.synth = new Tone.Synth().toDestination();
-    this.setup(false)
+    this.referenceToneSynth = new Tone.Synth().toDestination();
+    this.synth = new Tone.Synth({envelope: {
+        attack: 0.0005,
+        decay: 1.9,
+        sustain: 0.8,
+        release: 15,
+      }}).toDestination();
+    this.setup(false);
   }
 
 
   playReferenceSound() {
-    this.synth.triggerAttackRelease(this.currentNote, "8n");
+    this.referenceToneSynth.triggerAttackRelease(this.currentNote, "8n");
   }
 
   playSelectedSound() {
-    this.synth.triggerAttackRelease(this.currentNote + this.calculateSelectedDif(), "8n");
+    this.synth.triggerAttackRelease(this.currentNote + this.calculateSelectedDif(), 0.001);
   }
 
   calculateSelectedDif() {
@@ -97,6 +103,7 @@ export class Tab1Page {
     }
     this.oldVal = this.sliderValue
     this.sliderValue = ev.args.value;
+    this.synth.setNote(this.currentNote + this.calculateSelectedDif());
   }
 
   setup(setKnob = true) {
