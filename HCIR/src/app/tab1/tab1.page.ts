@@ -131,11 +131,11 @@ export class Tab1Page {
 
   onSliderChange(ev: any) {
     //TODO when turning to fast events are omitted
-    if (ev.args.value == 0 && this.oldVal > 50) {
-      this.offset++
-    } else if (ev.args.value == 0 && this.oldVal < 50) {
-      this.offset--
-    }
+    // if (ev.args.value == 0 && this.oldVal > 50) {
+    //   this.offset++
+    // } else if (ev.args.value == 0 && this.oldVal < 50) {
+    //   this.offset--
+    // }
     this.oldVal = this.sliderValue
     this.sliderValue = ev.args.value;
     this.synth.setNote(this.currentNote + this.calculateSelectedDif());
