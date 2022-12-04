@@ -78,11 +78,38 @@ export class Tab1Page {
   }
 
   async confirmSelection() {
-    const diff = Math.abs(this.calculateSelectedDif())
+    const diff = this.calculateSelectedDif();
+    const diffInCents = calcCents(this.currentNote, this.currentNote + diff);
+    const diffInCentsAbs = Math.abs(diffInCents);
+
+    let header = '';
+    let message = '';
+    switch (true) {
+      case (diffInCentsAbs > 100):
+        header = 'Katastrophal';
+        message = 'Das war ganz schön daneben!';
+        break;
+      case (diffInCentsAbs > 51):
+        header = 'Ungenügend';
+        message = 'Das klingt aber wirklich schief!';
+        break;
+      case (diffInCentsAbs > 25):
+        header = 'Ganz in Ordnung';
+        message = 'Das klingt schon ganz gut. Übe weiter!';
+        break;
+      case (diffInCentsAbs > 6):
+        header = 'Fast perfekt';
+        message = 'Das klingt schon echt gut. Mache weiter so!';
+        break;
+      default:
+        header = 'Perfekt';
+        message = 'Du hast den Ton voll getroffen. Du bist echt ein musikalisches Talent!';
+        break;
+    }
 
     const alert = await this.alertController.create({
-      header: 'Ergebnis',
-      message: 'Die Differenz beträgt: ' + Math.round(diff * 100) / 100 + ' Hz',
+      header,
+      message: 'Die Differenz beträgt: ' + diffInCents.toFixed(1) + ' Cents. ' + '<br/>' + message,
       buttons: ['OK'],
     });
 
@@ -127,4 +154,8 @@ export class Tab1Page {
 function getRandomProperty(obj) {
   const keys = Object.keys(obj);
   return obj[keys[keys.length * Math.random() << 0]];
+}
+
+function calcCents(f1: number, f2: number) {
+  return 1200 * Math.log2(f2 / f1);
 }
