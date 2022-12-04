@@ -83,33 +83,41 @@ export class Tab1Page {
     const diffInCentsAbs = Math.abs(diffInCents);
 
     let header = '';
-    let message = '';
+    let feedbackMessage = '';
     switch (true) {
       case (diffInCentsAbs > 100):
         header = 'Katastrophal';
-        message = 'Das war ganz schön daneben!';
+        feedbackMessage = 'Das war ganz schön daneben!';
         break;
       case (diffInCentsAbs > 51):
         header = 'Ungenügend';
-        message = 'Das klingt aber wirklich schief!';
+        feedbackMessage = 'Das klingt aber wirklich schief!';
         break;
       case (diffInCentsAbs > 25):
         header = 'Ganz in Ordnung';
-        message = 'Das klingt schon ganz gut. Übe weiter!';
+        feedbackMessage = 'Das klingt schon ganz gut. Übe weiter!';
         break;
       case (diffInCentsAbs > 6):
         header = 'Fast perfekt';
-        message = 'Das klingt schon echt gut. Mache weiter so!';
+        feedbackMessage = 'Das klingt schon echt gut. Mache weiter so!';
         break;
       default:
         header = 'Perfekt';
-        message = 'Du hast den Ton voll getroffen. Du bist echt ein musikalisches Talent!';
+        feedbackMessage = 'Du hast den Ton voll getroffen. Du bist echt ein musikalisches Talent!';
         break;
     }
 
+    let message = '';
+    if (diffInCents > 0) {
+      message = 'Dein ausgewählter Ton ist ' + diffInCentsAbs.toFixed(1) + ' Cents zu hoch. ' + '<br/>' + feedbackMessage;
+    } else if (diffInCents < 0) {
+      message = 'Dein ausgewählter Ton ist ' + diffInCentsAbs.toFixed(1) + ' Cents zu niedrig. ' + '<br/>' + feedbackMessage;
+    } else {
+      message = 'Dein ausgewählter Ton ist genau richtig. '+ '<br/>' + feedbackMessage;
+    }
     const alert = await this.alertController.create({
       header,
-      message: 'Die Differenz beträgt: ' + diffInCents.toFixed(1) + ' Cents. ' + '<br/>' + message,
+      message,
       buttons: ['OK'],
     });
 
