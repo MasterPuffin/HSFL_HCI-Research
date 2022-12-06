@@ -55,12 +55,14 @@ export class Tab1Page {
 
   constructor(private alertController: AlertController) {
     this.referenceToneSynth = new Tone.Synth().toDestination();
-    this.synth = new Tone.Synth({envelope: {
+    this.synth = new Tone.Synth({
+      envelope: {
         attack: 0.0005,
         decay: 1.9,
         sustain: 0.8,
         release: 15,
-      }}).toDestination();
+      }
+    }).toDestination();
     this.setup(false);
   }
 
@@ -113,7 +115,7 @@ export class Tab1Page {
     } else if (diffInCents < 0) {
       message = 'Dein ausgewählter Ton ist ' + diffInCentsAbs.toFixed(1) + ' Cents zu niedrig. ' + '<br/>' + feedbackMessage;
     } else {
-      message = 'Dein ausgewählter Ton ist genau richtig. '+ '<br/>' + feedbackMessage;
+      message = 'Dein ausgewählter Ton ist genau richtig. ' + '<br/>' + feedbackMessage;
     }
     const alert = await this.alertController.create({
       header,
@@ -131,11 +133,11 @@ export class Tab1Page {
 
   onSliderChange(ev: any) {
     //TODO when turning to fast events are omitted
-    // if (ev.args.value == 0 && this.oldVal > 50) {
-    //   this.offset++
-    // } else if (ev.args.value == 0 && this.oldVal < 50) {
-    //   this.offset--
-    // }
+    if (ev.args.value == 0 && this.oldVal > 50) {
+      this.offset++
+    } else if (ev.args.value == 0 && this.oldVal < 50) {
+      this.offset--
+    }
     this.oldVal = this.sliderValue
     this.sliderValue = ev.args.value;
     this.synth.setNote(this.currentNote + this.calculateSelectedDif());
