@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 06. Dez 2022 um 18:12
+-- Erstellungszeit: 06. Dez 2022 um 19:49
 -- Server-Version: 8.0.31-0ubuntu0.22.04.1
 -- PHP-Version: 8.1.2-1ubuntu2.6
 
@@ -34,7 +34,7 @@ CREATE TABLE `results` (
   `targetVal` double(10,3) NOT NULL,
   `selectedVal` double(10,3) NOT NULL,
   `replays` int NOT NULL,
-  `time` int NOT NULL
+  `time` double(10,3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --

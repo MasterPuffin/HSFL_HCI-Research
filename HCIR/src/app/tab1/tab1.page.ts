@@ -2,6 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import * as Tone from 'tone'
 import {AlertController} from '@ionic/angular';
 import {jqxKnobComponent} from "jqwidgets-ng/jqxknob";
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-tab1',
@@ -36,6 +37,12 @@ export class Tab1Page {
   sliderValue: number;
   currentNote: any
   randomToneOffset: number
+  replays: number
+
+  beginningTimestamp: Date
+  referenceToneHasBeenPlayed: Boolean
+
+  submitting = false
 
   /*
   Octave 4
@@ -53,7 +60,7 @@ export class Tab1Page {
     H: 493.88
   }
 
-  constructor(private alertController: AlertController) {
+  constructor(private alertController: AlertController, private http: HttpClient) {
     this.referenceToneSynth = new Tone.Synth().toDestination();
     this.synth = new Tone.Synth({
       envelope: {
@@ -66,8 +73,13 @@ export class Tab1Page {
     this.setup(false);
   }
 
-
   playReferenceSound() {
+    this.replays++;
+    if (!this.referenceToneHasBeenPlayed) {
+      this.referenceToneHasBeenPlayed = true;
+      //Only calculate time after tone has been played for the first time
+      this.beginningTimestamp = new Date();
+    }
     this.referenceToneSynth.triggerAttackRelease(this.currentNote, "8n");
   }
 
@@ -80,6 +92,7 @@ export class Tab1Page {
   }
 
   async confirmSelection() {
+    this.submitting = true;
     const diff = this.calculateSelectedDif();
     const diffInCents = calcCents(this.currentNote, this.currentNote + diff);
     const diffInCentsAbs = Math.abs(diffInCents);
@@ -123,7 +136,22 @@ export class Tab1Page {
       buttons: ['OK'],
     });
 
+    const time = (new Date().getTime() - this.beginningTimestamp.getTime()) / 1000;
+
+    // Submit result
+    const formData: any = new FormData();
+    formData.append("user", 1);
+    formData.append("targetVal", this.currentNote);
+    formData.append("selectedVal", this.currentNote + this.calculateSelectedDif());
+    formData.append("replays", this.replays);
+    formData.append("time", time);
+
+    this.http.post('http://localhost/hcir/addResult.php?key=TSmE7UFRABhf44WaVGkqnCN2en', formData).subscribe(data => {
+      console.log(data)
+    })
+
     await alert.present();
+    this.submitting = false;
     await alert.onDidDismiss();
     this.setup();
   }
@@ -145,6 +173,8 @@ export class Tab1Page {
   }
 
   setup(setKnob = true) {
+    this.referenceToneHasBeenPlayed = false;
+    this.replays = 0;
     this.sliderValue = 50;
     const oldNote = this.currentNote
     if (setKnob) {
@@ -156,9 +186,6 @@ export class Tab1Page {
     } while (oldNote == this.currentNote)
 
     this.randomToneOffset = (Math.random() * (30 - 10) + 10) * (Math.random() < 0.5 ? -1 : 1);
-
-    console.log(this.randomToneOffset)
-    console.log(this.currentNote)
   }
 }
 

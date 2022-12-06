@@ -14,7 +14,7 @@ try {
 	global $mysqli;
 	$stmt = $mysqli->prepare("INSERT INTO results (timestamp, user, targetVal, selectedVal, replays, time) VALUES (?, ?, ?, ?, ?, ?)");
 	$time = time();
-	$stmt->bind_param('isddii', $time, $_POST['user'], $_POST['targetVal'], $_POST['selectedVal'], $_POST['replays'], $_POST['time']);
+	$stmt->bind_param('isddif', $time, $_POST['user'], $_POST['targetVal'], $_POST['selectedVal'], $_POST['replays'], $_POST['time']);
 
 	$stmt->execute();
 } catch (Exception $e) {

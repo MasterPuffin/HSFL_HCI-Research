@@ -20,10 +20,12 @@
            [endAngle]="450" [snapToStep]="false" [rotation]="'clockwise'"
            [progressBar]="progressBar" [pointer]="pointer">
   </jqxKnob>
-  {{sliderValue + (offset * 100) - 50 }}
+<!--  {{sliderValue + (offset * 100) - 50 }}-->
   <ion-button expand="block" (click)="playSelectedSound()">Ausgewählten Ton abspielen</ion-button>
-  <ion-button expand="block" color="success" class="ion-margin-top" (click)="confirmSelection()">Auswahl bestätigen
+  <ion-button expand="block" [disabled]="submitting || !referenceToneHasBeenPlayed" color="success" class="ion-margin-top" (click)="confirmSelection()">
+    <ion-spinner *ngIf="submitting"></ion-spinner>
+    <span *ngIf="!submitting">Auswahl bestätigen</span>
   </ion-button>
-  <ion-button expand="block" color="medium" class="ion-margin-top" (click)="setup()">Setup</ion-button>
+<!--  <ion-button expand="block" color="medium" class="ion-margin-top" (click)="setup()">Setup</ion-button>-->
 
 </ion-content>
