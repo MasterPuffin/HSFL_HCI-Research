@@ -31,7 +31,7 @@ export class Tab1Page {
       offset: '50%'
     };
 
-
+  referenceToneSynth: any;
   synth: any;
   sliderValue: number;
   currentNote: any
@@ -54,17 +54,25 @@ export class Tab1Page {
   }
 
   constructor(private alertController: AlertController) {
-    this.synth = new Tone.Synth().toDestination();
-    this.setup(false)
+    this.referenceToneSynth = new Tone.Synth().toDestination();
+    this.synth = new Tone.Synth({
+      envelope: {
+        attack: 0.0005,
+        decay: 1.9,
+        sustain: 0.8,
+        release: 15,
+      }
+    }).toDestination();
+    this.setup(false);
   }
 
 
   playReferenceSound() {
-    this.synth.triggerAttackRelease(this.currentNote, "8n");
+    this.referenceToneSynth.triggerAttackRelease(this.currentNote, "8n");
   }
 
   playSelectedSound() {
-    this.synth.triggerAttackRelease(this.currentNote + this.calculateSelectedDif(), "8n");
+    this.synth.triggerAttackRelease(this.currentNote + this.calculateSelectedDif(), 0.001);
   }
 
   calculateSelectedDif() {
@@ -72,11 +80,46 @@ export class Tab1Page {
   }
 
   async confirmSelection() {
-    const diff = Math.abs(this.calculateSelectedDif())
+    const diff = this.calculateSelectedDif();
+    const diffInCents = calcCents(this.currentNote, this.currentNote + diff);
+    const diffInCentsAbs = Math.abs(diffInCents);
 
+    let header = '';
+    let feedbackMessage = '';
+    switch (true) {
+      case (diffInCentsAbs > 100):
+        header = 'Katastrophal';
+        feedbackMessage = 'Das war ganz schön daneben!';
+        break;
+      case (diffInCentsAbs > 51):
+        header = 'Ungenügend';
+        feedbackMessage = 'Das klingt aber wirklich schief!';
+        break;
+      case (diffInCentsAbs > 25):
+        header = 'Ganz in Ordnung';
+        feedbackMessage = 'Das klingt schon ganz gut. Übe weiter!';
+        break;
+      case (diffInCentsAbs > 6):
+        header = 'Fast perfekt';
+        feedbackMessage = 'Das klingt schon echt gut. Mache weiter so!';
+        break;
+      default:
+        header = 'Perfekt';
+        feedbackMessage = 'Du hast den Ton voll getroffen. Du bist echt ein musikalisches Talent!';
+        break;
+    }
+
+    let message = '';
+    if (diffInCents > 0) {
+      message = 'Dein ausgewählter Ton ist ' + diffInCentsAbs.toFixed(1) + ' Cents zu hoch. ' + '<br/>' + feedbackMessage;
+    } else if (diffInCents < 0) {
+      message = 'Dein ausgewählter Ton ist ' + diffInCentsAbs.toFixed(1) + ' Cents zu niedrig. ' + '<br/>' + feedbackMessage;
+    } else {
+      message = 'Dein ausgewählter Ton ist genau richtig. ' + '<br/>' + feedbackMessage;
+    }
     const alert = await this.alertController.create({
-      header: 'Ergebnis',
-      message: 'Die Differenz beträgt: ' + Math.round(diff * 100) / 100 + ' Hz',
+      header,
+      message,
       buttons: ['OK'],
     });
 
@@ -97,6 +140,7 @@ export class Tab1Page {
     }
     this.oldVal = this.sliderValue
     this.sliderValue = ev.args.value;
+    this.synth.setNote(this.currentNote + this.calculateSelectedDif());
   }
 
   setup(setKnob = true) {
@@ -120,4 +164,8 @@ export class Tab1Page {
 function getRandomProperty(obj) {
   const keys = Object.keys(obj);
   return obj[keys[keys.length * Math.random() << 0]];
+}
+
+function calcCents(f1: number, f2: number) {
+  return 1200 * Math.log2(f2 / f1);
 }
