@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import {Storage} from "@ionic/storage-angular";
 
 @Component({
   selector: 'app-tab3',
@@ -7,21 +7,13 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['tab3.page.scss']
 })
 export class Tab3Page {
+  uuid: String
 
-  constructor(private toastController: ToastController) {}
-
-
-  async sendData() {
-    console.log('sending data')
-
-    const toast = await this.toastController.create({
-      message: 'Die Daten wurden gesendet',
-      duration: 1500,
-      position: 'bottom'
-    });
-
-    await toast.present();
+  constructor(private storage: Storage) {
   }
 
-
+  async ngOnInit() {
+    await this.storage.create();
+    this.uuid = await this.storage.get('uuid');
+  }
 }

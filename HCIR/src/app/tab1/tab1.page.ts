@@ -4,7 +4,7 @@ import {AlertController} from '@ionic/angular';
 import {jqxKnobComponent} from "jqwidgets-ng/jqxknob";
 import {HttpClient} from '@angular/common/http';
 import {GlobalVariables} from "../globals";
-import { Storage } from '@ionic/storage-angular';
+import {Storage} from '@ionic/storage-angular';
 
 @Component({
   selector: 'app-tab1',
@@ -45,7 +45,7 @@ export class Tab1Page {
   referenceToneHasBeenPlayed: Boolean
 
   submitting = false
-  uuid:String
+  uuid: String
 
   /*
   Octave 4
