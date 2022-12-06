@@ -4,6 +4,7 @@ import {AlertController} from '@ionic/angular';
 import {jqxKnobComponent} from "jqwidgets-ng/jqxknob";
 import {HttpClient} from '@angular/common/http';
 import {GlobalVariables} from "../globals";
+import { Storage } from '@ionic/storage-angular';
 
 @Component({
   selector: 'app-tab1',
@@ -44,6 +45,7 @@ export class Tab1Page {
   referenceToneHasBeenPlayed: Boolean
 
   submitting = false
+  uuid:String
 
   /*
   Octave 4
@@ -61,7 +63,7 @@ export class Tab1Page {
     H: 493.88
   }
 
-  constructor(private alertController: AlertController, private http: HttpClient) {
+  constructor(private alertController: AlertController, private http: HttpClient, private storage: Storage) {
     this.referenceToneSynth = new Tone.Synth().toDestination();
     this.synth = new Tone.Synth({
       envelope: {
@@ -72,6 +74,11 @@ export class Tab1Page {
       }
     }).toDestination();
     this.setup(false);
+  }
+
+  async ngOnInit() {
+    await this.storage.create();
+    this.uuid = await this.storage.get('uuid');
   }
 
   playReferenceSound() {
@@ -141,7 +148,7 @@ export class Tab1Page {
 
     // Submit result
     const formData: any = new FormData();
-    formData.append("user", 1);
+    formData.append("user", this.uuid);
     formData.append("targetVal", this.currentNote);
     formData.append("selectedVal", this.currentNote + this.calculateSelectedDif());
     formData.append("replays", this.replays);
