@@ -3,6 +3,7 @@ import * as Tone from 'tone'
 import {AlertController} from '@ionic/angular';
 import {jqxKnobComponent} from "jqwidgets-ng/jqxknob";
 import {HttpClient} from '@angular/common/http';
+import {GlobalVariables} from "../globals";
 
 @Component({
   selector: 'app-tab1',
@@ -146,7 +147,7 @@ export class Tab1Page {
     formData.append("replays", this.replays);
     formData.append("time", time);
 
-    this.http.post('http://localhost/hcir/addResult.php?key=TSmE7UFRABhf44WaVGkqnCN2en', formData).subscribe(data => {
+    this.http.post(`${GlobalVariables.BASE_API_URL}addResult.php?key=${GlobalVariables.API_KEY}`, formData).subscribe(data => {
       console.log(data)
     })
 
