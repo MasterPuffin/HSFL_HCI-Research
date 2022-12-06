@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Leaderboard
+      Ergebnisse
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,8 +9,39 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Leaderboard</ion-title>
+      <ion-title size="large">Ergebnisse</ion-title>
     </ion-toolbar>
   </ion-header>
-  <!--Content goes here -->
+
+  <ion-refresher slot="fixed" (ionRefresh)="handleReload($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-card *ngFor="let entry of data">
+    <ion-card-header>
+      <ion-card-title>{{ getScore(entry.targetVal,entry.selectedVal) }}</ion-card-title>
+      <ion-card-subtitle>{{getDate(entry.timestamp)}}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col>Zielfrequenz</ion-col>
+          <ion-col>{{entry.targetVal}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Gewählte Frequenz</ion-col>
+          <ion-col>{{entry.selectedVal}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Wiederholungen</ion-col>
+          <ion-col>{{entry.replays}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>Zeit (s)</ion-col>
+          <ion-col>{{entry.time}}</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

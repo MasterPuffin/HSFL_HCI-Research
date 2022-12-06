@@ -8,8 +8,8 @@ if (
 
 try {
 	global $mysqli;
-	$stmt = $mysqli->prepare("SELECT * FROM results WHERE user LIKE ?");
-	$stmt->bind_param('i', $_POST['user']);
+	$stmt = $mysqli->prepare("SELECT * FROM results WHERE user LIKE ? ORDER BY id DESC");
+	$stmt->bind_param('s', $_POST['user']);
 	$stmt->execute();
 	$result = $stmt->get_result();
 	$stmt->close();
@@ -32,7 +32,7 @@ try {
 		$filteredArray[] = $ta;
 	}
 
-	echo '{"success": true, "reason": "", data: ' . json_encode($filteredArray) . '}';
+	echo '{"success": true, "reason": "", "data": ' . json_encode($filteredArray) . '}';
 } catch (Exception $e) {
 	echo '{"success": false, "reason": ' . $e->getMessage() . '}';
 }
