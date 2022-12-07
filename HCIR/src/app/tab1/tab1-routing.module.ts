@@ -6,6 +6,14 @@ const routes: Routes = [
   {
     path: '',
     component: Tab1Page,
+  },
+  {
+    path: 'training-startup',
+    loadChildren: () => import('./training-startup/training-startup.module').then( m => m.TrainingStartupPageModule)
+  },
+  {
+    path: 'training-completed',
+    loadChildren: () => import('./training-completed/training-completed.module').then( m => m.TrainingCompletedPageModule)
   }
 ];
 

@@ -1,14 +1,15 @@
-import {Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, ViewChild} from '@angular/core';
 import * as Tone from 'tone'
 import {AlertController} from '@ionic/angular';
 import {jqxKnobComponent} from "jqwidgets-ng/jqxknob";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss']
 })
-export class Tab1Page {
+export class Tab1Page implements AfterViewInit, OnDestroy{
   @ViewChild('knobReference') myKnob: jqxKnobComponent;
   progressBar: any =
     {
@@ -36,6 +37,8 @@ export class Tab1Page {
   sliderValue: number;
   currentNote: any
   randomToneOffset: number
+  readonly numberOfExcercises = 15;
+  excercise: number;
 
   /*
   Octave 4
@@ -53,7 +56,8 @@ export class Tab1Page {
     H: 493.88
   }
 
-  constructor(private alertController: AlertController) {
+  constructor(private alertController: AlertController, private router: Router) {
+    this.excercise = 1;
     this.referenceToneSynth = new Tone.Synth().toDestination();
     this.synth = new Tone.Synth({envelope: {
         attack: 0.0005,
@@ -64,6 +68,13 @@ export class Tab1Page {
     this.setup(false);
   }
 
+  ngOnDestroy(): void {
+      this.showTabbar();
+    }
+
+  ngAfterViewInit() {
+    this.hideTabbar();
+  }
 
   playReferenceSound() {
     this.referenceToneSynth.triggerAttackRelease(this.currentNote, "8n");
@@ -83,46 +94,53 @@ export class Tab1Page {
     const diffInCentsAbs = Math.abs(diffInCents);
 
     let header = '';
-    let feedbackMessage = '';
+    let subHeader = '';
     switch (true) {
       case (diffInCentsAbs > 100):
         header = 'Katastrophal';
-        feedbackMessage = 'Das war ganz schön daneben!';
+        subHeader = 'Das war ganz schön daneben!';
         break;
       case (diffInCentsAbs > 51):
         header = 'Ungenügend';
-        feedbackMessage = 'Das klingt aber wirklich schief!';
+        subHeader = 'Das klingt aber wirklich schief!';
         break;
       case (diffInCentsAbs > 25):
         header = 'Ganz in Ordnung';
-        feedbackMessage = 'Das klingt schon ganz gut. Übe weiter!';
+        subHeader = 'Das klingt schon ganz gut. Übe weiter!';
         break;
       case (diffInCentsAbs > 6):
         header = 'Fast perfekt';
-        feedbackMessage = 'Das klingt schon echt gut. Mache weiter so!';
+        subHeader = 'Das klingt schon echt gut. Mache weiter so!';
         break;
       default:
         header = 'Perfekt';
-        feedbackMessage = 'Du hast den Ton voll getroffen. Du bist echt ein musikalisches Talent!';
+        subHeader = 'Du hast den Ton voll getroffen. Du bist echt ein musikalisches Talent!';
         break;
     }
 
     let message = '';
     if (diffInCents > 0) {
-      message = 'Dein ausgewählter Ton ist ' + diffInCentsAbs.toFixed(1) + ' Cents zu hoch. ' + '<br/>' + feedbackMessage;
+      message = 'Dein ausgewählter Ton ist ' + diffInCentsAbs.toFixed(1) + ' Cents zu hoch. ';
     } else if (diffInCents < 0) {
-      message = 'Dein ausgewählter Ton ist ' + diffInCentsAbs.toFixed(1) + ' Cents zu niedrig. ' + '<br/>' + feedbackMessage;
+      message = 'Dein ausgewählter Ton ist ' + diffInCentsAbs.toFixed(1) + ' Cents zu niedrig. ';
     } else {
-      message = 'Dein ausgewählter Ton ist genau richtig. '+ '<br/>' + feedbackMessage;
+      message = 'Dein ausgewählter Ton ist genau richtig. ';
     }
     const alert = await this.alertController.create({
       header,
+      subHeader,
       message,
       buttons: ['OK'],
     });
 
     await alert.present();
     await alert.onDidDismiss();
+    if (this.excercise === this.numberOfExcercises) {
+      this.resetExcercise();
+      await this.router.navigate(['tabs/tab1/training-completed']);
+    } else {
+      this.excercise++;
+    }
     this.setup();
   }
 
@@ -156,6 +174,49 @@ export class Tab1Page {
 
     console.log(this.randomToneOffset)
     console.log(this.currentNote)
+  }
+
+  resetExcercise() {
+    this.excercise = 1;
+  }
+
+  async abortExcersise() {
+    const alert = await this.alertController.create({
+      header: 'Übung abbrechen',
+      message: 'Möchtest du diese Übung wirklich abbrechen?',
+      buttons: [{
+        text: 'Nein',
+        role: 'cancel'
+      }, {
+        text: 'ja',
+        role: 'destructive',
+        handler: () => {
+          this.resetExcercise();
+          this.router.navigate(['/tabs/tab1']);
+        }
+      }],
+    });
+
+    await alert.present();
+    await alert.onDidDismiss();
+  }
+
+  private hideTabbar() {
+    const tabs = document.querySelectorAll('ion-tab-bar');
+    if (tabs !== null) {
+      Object.keys(tabs).map((key) => {
+        tabs[key].style.display = 'none';
+      });
+    }
+  }
+
+  private showTabbar() {
+    const tabs = document.querySelectorAll('ion-tab-bar');
+    if (tabs !== null) {
+      Object.keys(tabs).map((key) => {
+        tabs[key].style.display = 'flex';
+      });
+    }
   }
 }
 
