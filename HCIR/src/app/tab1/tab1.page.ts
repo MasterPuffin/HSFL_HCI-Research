@@ -3,6 +3,9 @@ import * as Tone from 'tone'
 import {AlertController} from '@ionic/angular';
 import {jqxKnobComponent} from "jqwidgets-ng/jqxknob";
 import {Router} from "@angular/router";
+import {HttpClient} from '@angular/common/http';
+import {GlobalVariables} from "../globals";
+import {Storage} from '@ionic/storage-angular';
 
 @Component({
   selector: 'app-tab1',
@@ -39,6 +42,13 @@ export class Tab1Page implements AfterViewInit, OnDestroy{
   randomToneOffset: number
   readonly numberOfExcercises = 15;
   excercise: number;
+  replays: number
+
+  beginningTimestamp: Date
+  referenceToneHasBeenPlayed: Boolean
+
+  submitting = false
+  uuid: String
 
   /*
   Octave 4
@@ -56,7 +66,12 @@ export class Tab1Page implements AfterViewInit, OnDestroy{
     H: 493.88
   }
 
-  constructor(private alertController: AlertController, private router: Router) {
+  constructor(
+    private alertController: AlertController,
+    private router: Router,
+    private http: HttpClient,
+    private storage: Storage
+  ) {
     this.excercise = 1;
     this.referenceToneSynth = new Tone.Synth().toDestination();
     this.synth = new Tone.Synth({envelope: {
@@ -76,7 +91,18 @@ export class Tab1Page implements AfterViewInit, OnDestroy{
     this.hideTabbar();
   }
 
+  async ngOnInit() {
+    await this.storage.create();
+    this.uuid = await this.storage.get('uuid');
+  }
+
   playReferenceSound() {
+    this.replays++;
+    if (!this.referenceToneHasBeenPlayed) {
+      this.referenceToneHasBeenPlayed = true;
+      //Only calculate time after tone has been played for the first time
+      this.beginningTimestamp = new Date();
+    }
     this.referenceToneSynth.triggerAttackRelease(this.currentNote, "8n");
   }
 
@@ -89,6 +115,7 @@ export class Tab1Page implements AfterViewInit, OnDestroy{
   }
 
   async confirmSelection() {
+    this.submitting = true;
     const diff = this.calculateSelectedDif();
     const diffInCents = calcCents(this.currentNote, this.currentNote + diff);
     const diffInCentsAbs = Math.abs(diffInCents);
@@ -133,7 +160,22 @@ export class Tab1Page implements AfterViewInit, OnDestroy{
       buttons: ['OK'],
     });
 
+    const time = (new Date().getTime() - this.beginningTimestamp.getTime()) / 1000;
+
+    // Submit result
+    const formData: any = new FormData();
+    formData.append("user", this.uuid);
+    formData.append("targetVal", this.currentNote);
+    formData.append("selectedVal", this.currentNote + this.calculateSelectedDif());
+    formData.append("replays", this.replays);
+    formData.append("time", time);
+
+    this.http.post(`${GlobalVariables.BASE_API_URL}addResult.php?key=${GlobalVariables.API_KEY}`, formData).subscribe(data => {
+      console.log(data)
+    })
+
     await alert.present();
+    this.submitting = false;
     await alert.onDidDismiss();
     if (this.excercise === this.numberOfExcercises) {
       this.resetExcercise();
@@ -149,6 +191,7 @@ export class Tab1Page implements AfterViewInit, OnDestroy{
 
   onSliderChange(ev: any) {
     //TODO when turning to fast events are omitted
+
     // if (ev.args.value == 0 && this.oldVal > 50) {
     //   this.offset++
     // } else if (ev.args.value == 0 && this.oldVal < 50) {
@@ -160,6 +203,8 @@ export class Tab1Page implements AfterViewInit, OnDestroy{
   }
 
   setup(setKnob = true) {
+    this.referenceToneHasBeenPlayed = false;
+    this.replays = 0;
     this.sliderValue = 50;
     const oldNote = this.currentNote
     if (setKnob) {
@@ -171,9 +216,6 @@ export class Tab1Page implements AfterViewInit, OnDestroy{
     } while (oldNote == this.currentNote)
 
     this.randomToneOffset = (Math.random() * (30 - 10) + 10) * (Math.random() < 0.5 ? -1 : 1);
-
-    console.log(this.randomToneOffset)
-    console.log(this.currentNote)
   }
 
   resetExcercise() {
