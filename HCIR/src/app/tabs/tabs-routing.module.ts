@@ -9,7 +9,15 @@ const routes: Routes = [
     children: [
       {
         path: 'tab1',
+        loadChildren: () => import('../tab1/training-startup/training-startup.module').then(m => m.TrainingStartupPageModule)
+      },
+      {
+        path: 'tab1/training',
         loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
+      },
+      {
+        path: 'tab1/training-completed',
+        loadChildren: () => import('../tab1/training-completed/training-completed.module').then(m => m.TrainingCompletedPageModule)
       },
       {
         path: 'tab2',
