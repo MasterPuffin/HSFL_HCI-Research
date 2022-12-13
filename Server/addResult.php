@@ -14,7 +14,15 @@ try {
 	global $mysqli;
 	$stmt = $mysqli->prepare("INSERT INTO results (timestamp, user, targetVal, selectedVal, replays, time) VALUES (?, ?, ?, ?, ?, ?)");
 	$time = time();
-	$stmt->bind_param('isddif', $time, $_POST['user'], $_POST['targetVal'], $_POST['selectedVal'], $_POST['replays'], $_POST['time']);
+
+	//I don't know why, but not using these vars make the app not run in the prod env
+	$user = $_POST['user'];
+	$targetVal =  $_POST['targetVal'];
+	$selectedVal = $_POST['selectedVal'];
+	$replays = $_POST['replays'];
+	$time2 = $_POST['time'];
+
+	$stmt->bind_param('isddid', $time, $user, $targetVal, $selectedVal, $replays, $time2);
 
 	$stmt->execute();
 } catch (Exception $e) {
