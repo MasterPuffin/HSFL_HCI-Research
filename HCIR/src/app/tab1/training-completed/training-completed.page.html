@@ -6,9 +6,11 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <h1>Herzlichen Glückwunsch!</h1>
-  <div>Du hast dein heutiges Training erfolgreich absolviert. </div>
-  <div>Machst du morgen weiter?</div>
-  <ion-button [routerLink]="['/tabs/tab1']" expand="block">Fertig</ion-button>
+  <p>Du hast dein heutiges Training erfolgreich absolviert. </p>
+  <p>Dein durchschnittlicher Score heute war <b>{{scoreToday}} Cents</b></p>
+  <p *ngIf="scoreYesterday">Dein durchschnittlicher Score gestern war <b>{{scoreYesterday}} Cents</b>. {{scoreEval}}</p>
+  <p>Machst du morgen weiter?</p>
+  <ion-button [routerLink]="['/tabs/tab1']" class="ion-margin-top" expand="block">Fertig</ion-button>
 
 
 </ion-content>
